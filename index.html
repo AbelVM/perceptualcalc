@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Is your color scale good enough for humans?</title>
+  <link rel="icon" type="image/png" href="https://avatars3.githubusercontent.com/u/9017165?v=3&s=460" />
+  <link rel="stylesheet" href="css/cartostyles.css">
+  <link rel="stylesheet" href="css/myapp.css">
+
+  <script src="scripts/dE00.js"></script>
+  <script src="scripts/myapp.js"></script>
+
+</head>
+
+<body>
+
+  <div class="CDB-HeaderInfo is-block">
+    <div class="CDB-HeaderInfo-title u-bSpace">
+      <h2 class="CDB-HeaderInfo-titleText CDB-Text CDB-Size-huge is-light">Is your color scale good enough for humans?</h2>
+    </div>
+    <br>
+    <p class="CDB-Text CDB-Size-large">
+      One of the problems when designing or choosing color scales for cartographic design is the need of not lying with the colors.
+      Let's say that one of your colors is "<i>accidentally</i>"
+      <a hred="https://visual.ly/blog/the-use-of-yellow-in-data-design/">highlighting</a> some range/category. Or the color separation is not enough to tell the difference between two classes.
+      There are several ways to mislead an observer just by a
+      <a href="https://www.climate-lab-book.ac.uk/2014/end-of-the-rainbow/">bad color election</a>.
+    </p>
+    <br>
+    <p class="CDB-Text CDB-Size-large">
+      To stay safe with colors and their impact on the audience, the first step is playing in a
+      <a href="https://en.wikipedia.org/wiki/Color_vision#Physiology_of_color_perception">perceptual</a> oriented playground. 
+      Because, in the end, the users of our designs will be mainly humans. So, set aside RGB, CMYK, HSL, HSV, etc. that are
+      based on the physics of light, and choose a color space focused on the perception of the colors by human beings. Choose
+      your color nodes in that color space, perform the interpolations to generate the gradients there and, once done, you
+      can always export the results to the format or color space required in your project. That being said, <a href="https://en.wikipedia.org/wiki/Lab_color_space">CIE L*a*b*</a> 
+      color space should be your weapon of choice.
+    </p>
+    <br>
+    <p class="CDB-Text CDB-Size-large">
+      If your starting point is a sketch of a scale made in a "traditional" color space or a list of selected color stops, you should start by translating it to
+      <b>CIE L*a*b*</b> space and then use
+      <a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Bezier interpolation</a> and
+      <a href="https://en.wikipedia.org/wiki/Lightness">lightness</a> correction, as explained
+      <a href="https://www.vis4.net/blog/2013/09/mastering-multi-hued-color-scales/">here</a>
+      to get a smoothed scale with no unwanted peaks. You can also use
+      <a href="https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/">Cube Helix</a> to build your scale, which is great for later printing in B&W. A shortcut might be going straight to
+      <a href=http://cartodb.github.io/labs-colorscales/>CCST</a> and design and test your color scales there. There are lots of other online tools for color scales design,
+      but
+      <b>CCST</b> is mine :P
+    </p>
+    <br>
+    <p class="CDB-Text CDB-Size-large">
+      I have made this little tool below just to showcase how bad in terms of human perception might be some of the most used color
+      scales. And how good are some others like the good ol'
+      <a href="http://colorbrewer2.org">ColorBRewer2</a> by
+      <a href="http://www.personal.psu.edu/cab38/">Cynthia A. Brewer</a>, or the fantastic work by
+      <a href="https://github.com/makella">Mamata Akella</a> with
+      <a href="https://carto.com/carto-colors/">CartoColors</a>. Or just check the ones you have made on your own. This little tool is based on the
+      <a href="https://en.wikipedia.org/wiki/Color_difference#CIEDE2000">CIELAB Delta E* 2000</a>
+      which is a metric of the perceptual distance between two colors, symbolized as &Delta;E*
+      <sub>00</sub>. Being 0 for the same color and 100 for the opposite one. Using the values in the table
+      <a href="http://zschuessler.github.io/DeltaE/learn/#toc-defining-delta-e">here</a> as a loose guide, we can decide whether our scale is polished enough for publishing.
+    </p>
+    <br>
+    <br>
+  </div>
+
+  <div class="CDB-Box-modal container">
+    <p class="CDB-Text CDB-Size-large">Just paste your color scale as a list of hex values in the text box and click the
+      <b>Check</b> button</p>
+    <br>
+    <input type="text" name="text" placeholder="Copy here your color scale" class="CDB-InputText CDB-Text" style="width:615px;"
+      id='inp' value="#4b2991, #872ca2, #c0369d, #ea4f88, #fa7876, #f6a97a, #edd9a3">
+    <button class="CDB-Button CDB-Button--loading CDB-Button--primary CDB-Button--small" id="go">
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small">CHECK</span>
+    </button>
+    <br>
+    <br>
+    <div class="CDB-Box-modal boxes">
+      <p class="CDB-Text CDB-Size-large">
+        The first check when testing
+        <b>quantitative</b> scales, should be to verify that the differences between colors next to each other in the scale
+        are perceptible at a glance while being more similar than opposite. Values between 2.3 and 49 should do the trick,
+        but the values should also be all in the same range, so the color variation is uniform along the scale.
+      </p>
+      <br>
+      <br>
+      <div class="scalebox" id="s1"></div>
+      <br>
+      <br>
+      <p class="CDB-Text CDB-Size-large" id="txt1"></p>
+    </div>
+    <br>
+    <br>
+    <div class="CDB-Box-modal boxes" id="s2">
+      <p class="CDB-Text CDB-Size-large">
+        In the case you are working with
+        <b>qualitative</b> scales for your categorized data, each color should be checked against each other to guarantee that
+        the color separation is correct regardless the pairing.
+      </p>
+      <br>
+      <p class="CDB-Text CDB-Size-large">This is also needed for
+        <b>divergent</b> scales, where colors placed symmetrically in the scale might be too close and lead to mistakes.
+      </p>
+      <br>
+      <p class="CDB-Text CDB-Size-large">For <b>sequential</b> scales, this matrix is of no use. Because of the monotony in the colors variation along the scale, the former check
+        for neighbor colors should be enough.
+      </p>
+      <br>
+      <br>
+    </div>
+
+  </div>
+
+
+  <div class="attrib">
+    <p class="CDB-Text CDB-Size-small">
+      <a href="https://github.com/AbelVM" target="_blank">Abel Vázquez Montoro</a>, 2018-03-19</p>
+  </div>
+
+</body>
+
+</html>
